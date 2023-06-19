@@ -5,11 +5,11 @@ from torchvision import transforms
 
 class Preprocessor:
 
-    def __init__(self, transform=None):
+    def __init__(self, scaleFactor=1.15, minNeighbors=6, img_dim=(299, 299)):
         self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-        self.scaleFactor = 1.15
-        self.minNeighbors = 8
-        self.img_dim = (299, 299)
+        self.scaleFactor = scaleFactor
+        self.minNeighbors = minNeighbors
+        self.img_dim = img_dim
         self.transform = transforms.Compose([
                             transforms.ToTensor(),
                             transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
@@ -17,7 +17,7 @@ class Preprocessor:
 
     def preprocess(self, img):
 
-        if type(img) == str:
+        if type(img) is str:
             img = cv2.imread(img)
 
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -26,7 +26,7 @@ class Preprocessor:
         if len(faces) == 0:
             return None
         elif len(faces) > 1:
-            print("More than one face detected")
+            print("More than one face detected in this frame")
             return None
         else:
             for (x, y, w, h) in faces:
@@ -45,6 +45,7 @@ class Preprocessor:
         print('Preprocessing video: ', video_adr)
         cap = cv2.VideoCapture(video_adr)
         frames = []
+        failed = 0
         while(cap.isOpened()):
             ret, frame = cap.read()
             if ret == False:
@@ -52,27 +53,31 @@ class Preprocessor:
             frame = self.preprocess(frame)
             if frame is not None:
                 frames.append(frame)
+            else:
+                failed += 1
+
 
         cap.release()
 
         frames = torch.stack(frames)
         frames = frames.reshape(-1, 3, 299, 299)
 
-        print('Preprocessing finished')
+        print(f'Preprocessing finished, failed frames: {failed}')
 
         return frames
 
 
 if __name__ == '__main__':
 
-    img_adr = r'C:\Users\Cristi\Desktop\Doctorat\Deepfakes\138_142_blending_artifact.png'
+    video_path = 'demo/038_125_deepfake.mp4'
+    image_path = 'demo/038_125_deepfake.PNG'
     img_preprocess = Preprocessor()
-    img = img_preprocess.preprocess(img_adr)
+    img = img_preprocess.preprocess(image_path)
 
-    video_adr = r'C:\Users\Cristi\Desktop\Doctorat\Deepfakes\038_125_deepfake.mp4'
+
     transf = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
     ])
-    frames = img_preprocess.preprocess_video(video_adr)
+    frames = img_preprocess.preprocess_video(video_path)
     print(frames.shape)
