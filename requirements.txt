@@ -1,0 +1,9 @@
+torchvision>=0.6.1
+numpy>=1.16.5
+opencv-python>=4.4.0.44
+
+# for CUDA 11.3 torch on Linux
+--find-links https://download.pytorch.org/whl/cu113/torch_stable.html; sys_platform == "linux"
+torch==1.10.2; sys_platform == "linux"
+torchvision==0.11.3; sys_platform == "linux"
+pytorch-lightning==1.5.10; sys_platform == "linux"
