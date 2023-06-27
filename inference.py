@@ -65,12 +65,12 @@ class DeepfakeDetector:
 if __name__ == "__main__":
 
 
-    video_path = 'demo/038_125_deepfake.mp4'
-    image_path = 'demo/038_125_deepfake.PNG'
-    image_path = 'demo/check_foto_left.jpg'
+    video_path = 'demo/017_803_deepfake.mp4'
+    # image_path = 'demo/038_125_deepfake.PNG'
+    # image_path = 'demo/check_foto_left.jpg'
     detector = DeepfakeDetector(max_frames=100)
-    out = detector.inference(video_path=None, img_path=image_path)
+    out = detector.inference(video_path=video_path, img_path=None)
 
     print('Output: ', out) # 1=deepfake, 0=real
-    print('Prediction: ', 'FAKE' if out > 0.5 else 'REAL')
+    print('Prediction: ', 'FAKE' if out > 0.9 else 'REAL')
 
