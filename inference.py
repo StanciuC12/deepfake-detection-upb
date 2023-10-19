@@ -12,7 +12,7 @@ class DeepfakeDetector:
         self.model = CNN(pretrained=True, architecture=self.model_type)
         self.model.load_state_dict(torch.load(self.model_path))
         self.model.eval()
-        self.preprocessor = Preprocessor(scaleFactor=1.3, minNeighbors=10, img_dim=(299, 299))
+        self.preprocessor = Preprocessor(scaleFactor=1.8, minNeighbors=3, img_dim=(299, 299))
         if batch_size is not None:
             self.batch_size = batch_size
         if max_frames is not None:
@@ -66,10 +66,10 @@ if __name__ == "__main__":
 
 
     video_path = 'demo/017_803_deepfake.mp4'
-    # image_path = 'demo/038_125_deepfake.PNG'
-    # image_path = 'demo/check_foto_left.jpg'
+    image_path = 'demo/real10.png'
+    #image_path = 'demo/check_foto_left.jpg'
     detector = DeepfakeDetector(max_frames=100)
-    out = detector.inference(video_path=video_path, img_path=None)
+    out = detector.inference(video_path=None, img_path=image_path)
 
     print('Output: ', out) # 1=deepfake, 0=real
     print('Prediction: ', 'FAKE' if out > 0.9 else 'REAL')
